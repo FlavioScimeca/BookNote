@@ -1,48 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
-
-function Greet({ name }: { name: string }) {
-  const message = `Hello, ${name}!`; // Calculates output
-
-  // Bad!
-  document.title = `Greetings to ${name}`; // Side-effect!
-
-  return <div>{message}</div>;
-}
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 function App() {
-  const timerIdRef = useRef(0);
-  const [count, setCount] = useState(0);
+  const [number, setNumber] = useState(1);
+  const [inc, setInc] = useState(0);
 
-  const startHandler = () => {
-    if (timerIdRef.current) {
-      return;
-    }
-    timerIdRef.current = setInterval(() => {
-      setCount((c) => c + 1), console.log('count updated');
-    }, 1000);
+  const factorial = useMemo(() => factorialOf(number), [number]);
+
+  const onChange = (event: any) => {
+    setNumber(Number(event.target.value));
   };
-
-  const stopHandler = () => {
-    clearInterval(timerIdRef.current);
-    timerIdRef.current = 0;
-  };
-
-  useEffect(() => {
-    console.log('1 render');
-    return () => clearInterval(timerIdRef.current);
-  }, []);
+  const onClick = () => setInc((i) => i + 1);
 
   return (
     <div>
-      <div>Timer: {count}s</div>
-      <div>
-        <button onClick={startHandler}>Start</button>
-        <button onClick={stopHandler}>Stop</button>
-      </div>
-
-      <Greet name="Chicco" />
+      Factorial of
+      <input type="number" value={number} onChange={onChange} />
+      is {factorial}
+      <button onClick={onClick}>Re-render</button>
     </div>
   );
+}
+
+function factorialOf(n: number): number {
+  console.log(`factorialOf(${n}) called!`);
+  return n <= 0 ? 1 : n * factorialOf(n - 1);
 }
 
 export default App;
