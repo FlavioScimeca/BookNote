@@ -9,8 +9,24 @@
 
 <br/>
 
-#### In short, useEffect is a tool that allows us to interact with the outside world but doesn't affect the rendering or performance of the component it's in
+In short, useEffect is a tool that allows us to interact with the outside world but doesn't affect the rendering or performance of the component it's in
 
+<br>
+
+## useEffect() arguments
+
+```js
+useEffect(callback[, dependencies]);
+```
+
+Note-> the callback argument of useEffect(callback) cannot be an async function. But you can always define and then invoke an async function inside the callback itself:
+
+- callback is a function that contains the side-effect logic. callback is executed right after the DOM update.
+- dependencies is an optional array of dependencies. useEffect() executes callback only if the dependencies have changed between renderings.
+
+Put your side-effect logic into the callback function, then use the dependencies argument to control when you want the side-effect to run. That's the sole purpose of useEffect().
+
+<hr>
 ## Syntax
 
 ```js
@@ -62,6 +78,10 @@ export default MyButton;
 
 # Clean up
 
+> Some side-effects need cleanup: close a socket, clear timers.
+
+> If the callback of useEffect(callback, deps) returns a function, then useEffect() considers that function as an effect cleanup
+
 ```js
 function Timer() {
   const [count, setCount] = useState(0);
@@ -84,3 +104,13 @@ function Timer() {
 **When a component is unmounted, our cleanup function runs, our range is cleared, and we no longer get an error trying to update a state variable that doesn't exist.**
 
 **Finally, side effect cleanup is not required in all cases. It is only required in some cases, such as when a repeating side effect needs to be stopped when the component disassembles**
+
+<hr>
+
+## Cleanup works the following way:
+
+1. After initial rendering, useEffect() invokes the callback with the side-effect. cleanup function is not invoked.
+
+2. On later renderings, before invoking the next side-effect callback, useEffect() invokes the cleanup function from the previous side-effect execution (to clean up everything after the previous side-effect), then invokes the current side-effect.
+
+3. Finally, after unmounting the component, useEffect() invokes the cleanup function from the latest side-effect.

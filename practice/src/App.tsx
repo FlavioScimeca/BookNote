@@ -1,23 +1,47 @@
 import { useEffect, useRef, useState } from 'react';
 
+function Greet({ name }: { name: string }) {
+  const message = `Hello, ${name}!`; // Calculates output
+
+  // Bad!
+  document.title = `Greetings to ${name}`; // Side-effect!
+
+  return <div>{message}</div>;
+}
+
 function App() {
-  const [inputValue, setInputValue] = useState('');
-  const previousInputValue = useRef('');
+  const timerIdRef = useRef(0);
+  const [count, setCount] = useState(0);
+
+  const startHandler = () => {
+    if (timerIdRef.current) {
+      return;
+    }
+    timerIdRef.current = setInterval(() => {
+      setCount((c) => c + 1), console.log('count updated');
+    }, 1000);
+  };
+
+  const stopHandler = () => {
+    clearInterval(timerIdRef.current);
+    timerIdRef.current = 0;
+  };
 
   useEffect(() => {
-    previousInputValue.current = inputValue;
-  }, [inputValue]);
+    console.log('1 render');
+    return () => clearInterval(timerIdRef.current);
+  }, []);
 
   return (
-    <>
-      <input
-        type="text"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
-      <h2>Current Value: {inputValue}</h2>
-      <h2>Previous Value: {previousInputValue.current}</h2>
-    </>
+    <div>
+      <div>Timer: {count}s</div>
+      <div>
+        <button onClick={startHandler}>Start</button>
+        <button onClick={stopHandler}>Stop</button>
+      </div>
+
+      <Greet name="Chicco" />
+    </div>
   );
 }
 
