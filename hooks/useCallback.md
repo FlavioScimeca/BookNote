@@ -46,7 +46,6 @@ export default function App() {
   return (
     // Now the Todos component will only re-render when the todos prop changes
     <>
-      changes.
       <Todos todos={todos} addTodo={addTodo} />
       <hr />
       <div>
