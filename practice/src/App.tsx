@@ -1,29 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
+import Todos from './components/Todos';
 
-function App() {
-  const [number, setNumber] = useState(1);
-  const [inc, setInc] = useState(0);
+export default function App() {
+  const [count, setCount] = useState(0);
+  const [todos, setTodos] = useState<string[]>([]);
 
-  const factorial = useMemo(() => factorialOf(number), [number]);
-
-  const onChange = (event: any) => {
-    setNumber(Number(event.target.value));
+  const increment = () => {
+    setCount((c) => c + 1);
   };
-  const onClick = () => setInc((i) => i + 1);
+  const addTodo = useCallback(() => {
+    setTodos((todos) => [...todos, 'New Todo']);
+  }, [todos]);
+
+  // const addTodo = () => {
+  //   setTodos((todos) => [...todos, 'New Todo']);
+  // };
 
   return (
-    <div>
-      Factorial of
-      <input type="number" value={number} onChange={onChange} />
-      is {factorial}
-      <button onClick={onClick}>Re-render</button>
-    </div>
+    <>
+      <Todos todos={todos} addTodo={addTodo} />
+      <hr />
+      <div>
+        Count: {count}
+        <button onClick={increment}>+</button>
+      </div>
+    </>
   );
 }
-
-function factorialOf(n: number): number {
-  console.log(`factorialOf(${n}) called!`);
-  return n <= 0 ? 1 : n * factorialOf(n - 1);
-}
-
-export default App;
